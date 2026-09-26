@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Status Donasi | SedekahBerkah</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            fontFamily: { poppins: ['Poppins','sans-serif'] },
+            colors: { emerald: {50:'#ecfdf5',100:'#d1fae5',500:'#10b981',600:'#059669',700:'#047857'}, gold:'#F59E0B' }
+        }}};
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="font-poppins text-gray-800 antialiased bg-slate-50 min-h-screen flex flex-col">
+
+    <nav class="bg-white border-b border-gray-100">
+        <div class="max-w-4xl mx-auto px-4 h-20 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2">
+                <i class="fa-solid fa-hand-holding-heart text-2xl text-emerald-500"></i>
+                <span class="font-bold text-xl">Sedekah<span class="text-emerald-500">Berkah</span></span>
+            </a>
+            <a href="donasi.html" class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-full font-medium text-sm transition">Donasi Sekarang</a>
+        </div>
+    </nav>
+
+    <main class="flex-1 py-14 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2"><i class="fa-solid fa-magnifying-glass-location text-emerald-500 mr-2"></i>Lacak Donasi Anda</h1>
+                <p class="text-gray-500">Masukkan <b>nomor invoice</b> (contoh: DB-20260927-XXXXX) atau <b>alamat email</b> yang digunakan saat berdonasi.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8 max-w-2xl mx-auto">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="text" id="inputCari" placeholder="DB-20260927-... atau email@contoh.com"
+                           class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
+                    <button id="btnCari" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-xl transition whitespace-nowrap">
+                        <i class="fa-solid fa-search mr-1"></i>Cari
+                    </button>
+                </div>
+                <p id="cariError" class="hidden text-red-500 text-sm mt-3"><i class="fa-solid fa-circle-exclamation mr-1"></i>Data tidak ditemukan. Pastikan invoice/email benar.</p>
+            </div>
+
+            <!-- Hasil pencarian -->
+            <div id="hasilWrap" class="hidden max-w-2xl mx-auto mt-8 space-y-4">
+                <h2 class="font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left text-emerald-500 mr-1"></i>Riwayat Donasi (<span id="jumlahHasil">0</span>)</h2>
+                <div id="hasilList" class="space-y-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center text-xs text-gray-400 py-8">&copy; 2026 Yayasan Sedekah Berkah</footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="app.js"></script>
+    <script>
+    (function () {
+        const el = id => document.getElementById(id);
+
+        function statusBadge(status) {
+            const s = STATUS_LABEL[status] || STATUS_LABEL.menunggu;
+            return `<span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full border ${s.cls}">${s.teks}</span>`;
+        }
+
+        function cardHtml(key, t) {
+            const meta = PAY_METHODS[t.metode] || { nama: t.metode || '-' };
+            const aksi = t.status === 'menunggu'
+                ? `<a href="bayar.html?id=${key}" class="shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition"><i class="fa-solid fa-credit-card mr-1"></i>Bayar</a>`
+                : `<a href="campaign.html?id=${t.programId || ''}" class="shrink-0 border border-emerald-500 text-emerald-600 hover:bg-emerald-50 text-xs font-bold px-4 py-2.5 rounded-lg transition">Lihat Program</a>`;
+            return `
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col sm:flex-row gap-4 sm:items-center">
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                        ${statusBadge(t.status)}
+                        <span class="font-mono text-xs text-gray-400">${t.invoice || key}</span>
+                    </div>
+                    <p class="font-bold text-gray-800 truncate">${t.programNama || '-'}</p>
+                    <p class="text-xs text-gray-400 mt-1"><i class="fa-regular fa-calendar mr-1"></i>${waktuLengkap(t.timestamp)} &nbsp;•&nbsp; <i class="fa-solid fa-wallet mr-1"></i>${meta.nama}</p>
+                </div>
+                <div class="text-right shrink-0">
+                    <p class="font-bold text-emerald-600 text-lg">${rupiah(t.nominal)}</p>
+                    ${aksi}
+                </div>
+            </div>`;
+        }
+
+        function renderResults(map) {
+            const arr = Object.entries(map).sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+            el('jumlahHasil').textContent = arr.length;
+            el('hasilList').innerHTML = arr.map(([k, t]) => cardHtml(k, t)).join('');
+            el('hasilWrap').classList.toggle('hidden', arr.length === 0);
+            el('cariError').classList.toggle('hidden', arr.length > 0);
+        }
+
+        function cari() {
+            const q = el('inputCari').value.trim().toLowerCase();
+            if (!q) { showToast('Isi nomor invoice atau email terlebih dahulu.', 'warn'); return; }
+            el('btnCari').disabled = true;
+
+            db.ref('donasi').once('value').then(snap => {
+                const found = {};
+                snap.forEach(c => {
+                    const t = c.val();
+                    const inv = String(t.invoice || '').toLowerCase();
+                    const em = String(t.email || '').toLowerCase();
+                    if (inv === q || em === q || (q.includes('@') && em.includes(q))) found[c.key] = t;
+                });
+                renderResults(found);
+            }).catch(err => {
+                console.error(err);
+                showToast('Gagal memuat data: ' + err.message, 'error');
+            }).finally(() => { el('btnCari').disabled = false; });
+        }
+
+        el('btnCari').addEventListener('click', cari);
+        el('inputCari').addEventListener('keydown', e => { if (e.key === 'Enter') cari(); });
+
+        // Auto-cari dari URL: cek-donasi.html?q=DB-...
+        const q = new URLSearchParams(location.search).get('q');
+        if (q) { el('inputCari').value = q; cari(); }
+    })();
+    </script>
+</body>
+</html>

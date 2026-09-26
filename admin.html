@@ -3,144 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Sedekah Online</title>
-    
+    <title>Admin Dashboard | Sedekah Berkah</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        poppins: ['Poppins', 'sans-serif'],
-                    },
-                    colors: {
-                        emerald: {
-                            50: '#ecfdf5',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                        }
-                    }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: {
+            fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+            colors: { emerald: { 50:'#ecfdf5', 500:'#10b981', 600:'#059669', 700:'#047857' } }
+        }}};
     </script>
-
-    <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f1f5f9; }
-        /* Scrollbar Utilities */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <style> body { background-color: #f1f5f9; } </style>
 </head>
-<body class="text-gray-800 flex h-screen overflow-hidden">
+<body class="font-poppins text-gray-800 h-screen overflow-hidden flex">
 
-    <aside class="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col shadow-sm">
+    <!-- ================= LOGIN SCREEN ================= -->
+    <div id="loginScreen" class="fixed inset-0 z-[60] bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-500 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 modal-in my-8">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-user-shield text-2xl text-emerald-600"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900">Admin<span class="text-emerald-500">Panel</span></h1>
+                <p class="text-sm text-gray-500 mt-1">Masuk untuk mengelola program &amp; transaksi donasi</p>
+            </div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Email Admin</label>
+                    <input type="email" id="loginEmail" required placeholder="admin@sedekahberkah.org"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Kata Sandi</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
+                </div>
+                <p id="loginError" class="hidden text-red-500 text-xs"><i class="fa-solid fa-circle-exclamation mr-1"></i><span id="loginErrorMsg">Email atau kata sandi salah.</span></p>
+                <button type="submit" id="btnLogin" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl transition-colors shadow-lg shadow-emerald-500/30">
+                    Masuk ke Dashboard
+                </button>
+            </form>
+            <div class="mt-6 bg-gray-50 border border-gray-100 rounded-xl p-4 text-xs text-gray-500 leading-relaxed">
+                <p class="font-bold text-gray-700 mb-1"><i class="fa-solid fa-key mr-1 text-emerald-500"></i>Setup sekali saja:</p>
+                <ol class="list-decimal list-inside space-y-1">
+                    <li>Firebase Console → <b>Authentication → Sign-in method</b> → aktifkan <b>Email/Password</b>.</li>
+                    <li>Menu <b>Users</b> → <b>Add User</b> → buat email &amp; password admin.</li>
+                    <li><b>Realtime Database → Rules</b> → publikasikan file <code class="bg-gray-200 px-1 rounded">database.rules.json</code> dari repo ini.</li>
+                </ol>
+            </div>
+            <a href="index.html" class="block text-center text-xs text-gray-400 hover:text-emerald-600 mt-4"><i class="fa-solid fa-arrow-left mr-1"></i>Kembali ke website</a>
+        </div>
+    </div>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col shadow-sm shrink-0">
         <div class="h-20 flex items-center px-6 border-b border-gray-100">
             <i class="fa-solid fa-hand-holding-heart text-2xl text-emerald-500 mr-2"></i>
             <span class="font-bold text-xl text-gray-800">Admin<span class="text-emerald-500">Panel</span></span>
         </div>
-        
-        <nav class="flex-1 p-4 space-y-2">
-            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-emerald-50 text-emerald-600 rounded-lg font-medium transition-colors">
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <button data-page="dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 bg-emerald-50 text-emerald-600 rounded-lg font-medium transition-colors text-left">
+                <i class="fa-solid fa-gauge-high w-5 text-center"></i> Dashboard
+            </button>
+            <button data-page="program" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors text-left">
                 <i class="fa-solid fa-table-list w-5 text-center"></i> Kelola Program
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors">
-                <i class="fa-solid fa-users w-5 text-center"></i> Data Donatur
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors">
+            </button>
+            <button data-page="transaksi" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors text-left">
+                <i class="fa-solid fa-receipt w-5 text-center"></i> Transaksi Donasi
+                <span id="badgeVerifikasi" class="hidden ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+            </button>
+            <button data-page="penyaluran" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors text-left">
+                <i class="fa-solid fa-box-open w-5 text-center"></i> Penyaluran &amp; Update
+            </button>
+            <button data-page="pengaturan" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors text-left">
                 <i class="fa-solid fa-gear w-5 text-center"></i> Pengaturan
+            </button>
+            <a href="index.html" target="_blank" class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors">
+                <i class="fa-solid fa-globe w-5 text-center"></i> Lihat Website
             </a>
         </nav>
-
         <div class="p-4 border-t border-gray-100">
-            <button class="flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 w-full rounded-lg font-medium transition-colors">
+            <button id="btnLogout" class="flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 w-full rounded-lg font-medium transition-colors">
                 <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Keluar
             </button>
         </div>
     </aside>
 
+    <!-- ================= MAIN ================= -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
-        
-        <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-10 shadow-sm">
+        <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-10 shadow-sm shrink-0">
             <div class="flex items-center gap-4">
-                <button class="md:hidden text-gray-500 text-xl hover:text-emerald-500"><i class="fa-solid fa-bars"></i></button>
-                <h1 class="text-xl font-bold text-gray-800">Kelola Program Donasi</h1>
+                <button id="btnMobileMenu" class="md:hidden text-gray-500 text-xl hover:text-emerald-500"><i class="fa-solid fa-bars"></i></button>
+                <h1 id="pageTitle" class="text-xl font-bold text-gray-800">Dashboard</h1>
             </div>
-            <div class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 px-3 py-1.5 rounded-lg transition-colors">
+            <div class="flex items-center gap-3 px-3 py-1.5 rounded-lg">
                 <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold">A</div>
-                <span class="font-medium hidden sm:block text-gray-700">Administrator</span>
+                <span id="adminEmailLabel" class="font-medium hidden sm:block text-gray-700 text-sm">Administrator</span>
             </div>
         </header>
 
+        <!-- mobile drawer -->
+        <div id="mobileDrawer" class="hidden md:hidden fixed inset-x-0 top-20 bottom-0 bg-white z-40 p-4 space-y-2 overflow-y-auto shadow-xl">
+            <button data-page="dashboard" class="nav-btn-m w-full flex items-center gap-3 px-4 py-3 bg-emerald-50 text-emerald-600 rounded-lg font-medium"><i class="fa-solid fa-gauge-high w-5"></i>Dashboard</button>
+            <button data-page="program" class="nav-btn-m w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium"><i class="fa-solid fa-table-list w-5"></i>Kelola Program</button>
+            <button data-page="transaksi" class="nav-btn-m w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium"><i class="fa-solid fa-receipt w-5"></i>Transaksi Donasi</button>
+            <button data-page="penyaluran" class="nav-btn-m w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium"><i class="fa-solid fa-box-open w-5"></i>Penyaluran &amp; Update</button>
+            <button data-page="pengaturan" class="nav-btn-m w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium"><i class="fa-solid fa-gear w-5"></i>Pengaturan</button>
+        </div>
+
         <div class="p-6 overflow-y-auto flex-1">
             <div class="max-w-7xl mx-auto w-full">
-                
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                    <div class="relative w-full sm:w-80">
-                        <input type="text" placeholder="Cari nama program..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400"></i>
-                    </div>
-                    <button id="btnTambah" class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg font-medium shadow-sm transition-all text-sm w-full sm:w-auto flex items-center justify-center">
-                        <i class="fa-solid fa-plus mr-2"></i> Tambah Program
-                    </button>
-                </div>
 
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[800px]">
-                            <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200 text-sm text-gray-600 uppercase tracking-wider">
-                                    <th class="p-4 font-semibold w-12 text-center">No</th>
-                                    <th class="p-4 font-semibold">Nama Program</th>
-                                    <th class="p-4 font-semibold">Kategori</th>
-                                    <th class="p-4 font-semibold text-right">Target (Rp)</th>
-                                    <th class="p-4 font-semibold text-right">Terkumpul (Rp)</th>
-                                    <th class="p-4 font-semibold text-center w-32">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody">
-                                <tr>
-                                    <td colspan="6" class="p-12 text-center text-gray-500">
-                                        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-500 mb-3"></i>
-                                        <p class="text-sm font-medium">Menghubungkan ke Firebase Database...</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <!-- ============ PAGE: DASHBOARD ============ -->
+                <section id="page-dashboard" class="admin-page space-y-6">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+                            <div class="flex items-center justify-between mb-2"><span class="text-xs font-semibold text-gray-500 uppercase">Dana Terkumpul</span><span class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-sack-dollar"></i></span></div>
+                            <p id="statTerkumpul" class="text-lg lg:text-2xl font-bold">Rp 0</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+                            <div class="flex items-center justify-between mb-2"><span class="text-xs font-semibold text-gray-500 uppercase">Donasi Bulan Ini</span><span class="w-9 h-9 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-arrow-trend-up"></i></span></div>
+                            <p id="statBulanIni" class="text-lg lg:text-2xl font-bold">Rp 0</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+                            <div class="flex items-center justify-between mb-2"><span class="text-xs font-semibold text-gray-500 uppercase">Total Donatur</span><span class="w-9 h-9 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center"><i class="fa-solid fa-users"></i></span></div>
+                            <p id="statDonatur" class="text-lg lg:text-2xl font-bold">0</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+                            <div class="flex items-center justify-between mb-2"><span class="text-xs font-semibold text-gray-500 uppercase">Perlu Verifikasi</span><span class="w-9 h-9 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center"><i class="fa-solid fa-hourglass-half"></i></span></div>
+                            <p id="statVerifikasi" class="text-lg lg:text-2xl font-bold text-amber-600">0</p>
+                        </div>
                     </div>
-                </div>
 
+                    <div class="grid lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                            <h3 class="font-bold text-gray-800 mb-4"><i class="fa-solid fa-chart-column text-emerald-500 mr-1"></i>Donasi Terkonfirmasi — 30 Hari Terakhir</h3>
+                            <div class="h-64"><canvas id="chartDonasiHarian"></canvas></div>
+                        </div>
+                        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                            <h3 class="font-bold text-gray-800 mb-4"><i class="fa-solid fa-chart-pie text-emerald-500 mr-1"></i>Pemasukan per Metode</h3>
+                            <div class="h-64"><canvas id="chartMetode"></canvas></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                            <h3 class="font-bold text-gray-800"><i class="fa-solid fa-bolt text-emerald-500 mr-1"></i>Aktivitas Terbaru</h3>
+                            <button class="text-xs font-semibold text-emerald-600 hover:underline goto-transaksi">Lihat semua transaksi →</button>
+                        </div>
+                        <div id="aktivitasList" class="divide-y divide-gray-50"></div>
+                    </div>
+                </section>
+
+                <!-- ============ PAGE: KELOLA PROGRAM ============ -->
+                <section id="page-program" class="admin-page hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div class="relative w-full sm:w-80">
+                            <input type="text" id="cariProgram" placeholder="Cari nama program..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400"></i>
+                        </div>
+                        <button id="btnTambah" class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg font-medium shadow-sm transition-all text-sm w-full sm:w-auto flex items-center justify-center">
+                            <i class="fa-solid fa-plus mr-2"></i> Tambah Program
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse min-w-[900px]">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b border-gray-200 text-sm text-gray-600 uppercase tracking-wider">
+                                        <th class="p-4 font-semibold w-12 text-center">No</th>
+                                        <th class="p-4 font-semibold">Nama Program</th>
+                                        <th class="p-4 font-semibold">Kategori</th>
+                                        <th class="p-4 font-semibold text-right">Target (Rp)</th>
+                                        <th class="p-4 font-semibold text-right">Terkumpul (Rp)</th>
+                                        <th class="p-4 font-semibold text-center w-40">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    <tr><td colspan="6" class="p-12 text-center text-gray-500"><i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-500 mb-3"></i><p class="text-sm font-medium">Menghubungkan ke Firebase Database...</p></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ PAGE: TRANSAKSI ============ -->
+                <section id="page-transaksi" class="admin-page hidden">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+                        <div class="flex flex-wrap gap-2" id="filterStatus">
+                            <button data-status="semua" class="filter-chip bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-full transition">Semua</button>
+                            <button data-status="menunggu" class="filter-chip bg-white border border-gray-200 text-gray-600 text-xs font-semibold px-4 py-2 rounded-full transition">Menunggu</button>
+                            <button data-status="verifikasi" class="filter-chip bg-white border border-gray-200 text-gray-600 text-xs font-semibold px-4 py-2 rounded-full transition">Perlu Verifikasi</button>
+                            <button data-status="success" class="filter-chip bg-white border border-gray-200 text-gray-600 text-xs font-semibold px-4 py-2 rounded-full transition">Sukses</button>
+                            <button data-status="gagal" class="filter-chip bg-white border border-gray-200 text-gray-600 text-xs font-semibold px-4 py-2 rounded-full transition">Gagal</button>
+                        </div>
+                        <div class="flex gap-3 w-full lg:w-auto">
+                            <div class="relative flex-1 lg:w-64">
+                                <input type="text" id="cariTransaksi" placeholder="Cari invoice / nama / email..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400"></i>
+                            </div>
+                            <button id="btnExportCsv" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap"><i class="fa-solid fa-file-csv mr-1 text-emerald-600"></i>CSV</button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse min-w-[1000px]">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b border-gray-200 text-sm text-gray-600 uppercase tracking-wider">
+                                        <th class="p-4 font-semibold">Invoice</th>
+                                        <th class="p-4 font-semibold">Donatur</th>
+                                        <th class="p-4 font-semibold">Program</th>
+                                        <th class="p-4 font-semibold">Nominal</th>
+                                        <th class="p-4 font-semibold">Metode</th>
+                                        <th class="p-4 font-semibold">Tanggal</th>
+                                        <th class="p-4 font-semibold text-center">Status</th>
+                                        <th class="p-4 font-semibold text-center w-44">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableTransaksi">
+                                    <tr><td colspan="8" class="p-12 text-center text-gray-500"><i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-500 mb-3"></i><p class="text-sm">Memuat transaksi...</p></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ PAGE: PENYALURAN ============ -->
+                <section id="page-penyaluran" class="admin-page hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <p class="text-sm text-gray-500">Update penyaluran tampil di timeline halaman publik masing-masing program.</p>
+                        <button id="btnTambahPenyaluran" class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg font-medium shadow-sm text-sm whitespace-nowrap"><i class="fa-solid fa-plus mr-2"></i>Tambah Update</button>
+                    </div>
+                    <div id="penyaluranCards" class="grid md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+                </section>
+
+                <!-- ============ PAGE: PENGATURAN ============ -->
+                <section id="page-pengaturan" class="admin-page hidden">
+                    <div class="grid lg:grid-cols-2 gap-6 max-w-5xl">
+                        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                            <h3 class="font-bold text-gray-800 mb-4"><i class="fa-solid fa-qrcode text-emerald-500 mr-1"></i>QRIS Statis Yayasan</h3>
+                            <p class="text-xs text-gray-500 mb-4">Upload gambar QRIS asli dari bank/e-wallet bisnis Anda. Gambar tersimpan di database dan tampil di halaman pembayaran.</p>
+                            <div class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center bg-gray-50 mb-4">
+                                <img id="previewQris" src="" class="h-48 mx-auto object-contain rounded bg-white" alt="Preview QRIS">
+                            </div>
+                            <input type="file" id="uploadQris" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-600 file:font-semibold hover:file:bg-emerald-100">
+                            <button id="btnSimpanQris" class="mt-4 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 rounded-lg text-sm"><i class="fa-solid fa-floppy-disk mr-1"></i>Simpan QRIS</button>
+                        </div>
+                        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                            <h3 class="font-bold text-gray-800 mb-4"><i class="fa-solid fa-building-columns text-emerald-500 mr-1"></i>Rekening Tujuan Transfer</h3>
+                            <div class="space-y-4 text-sm">
+                                <div><label class="block font-medium text-gray-700 mb-1">Nama Bank</label><input id="setBankName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 text-sm" placeholder="BSI"></div>
+                                <div><label class="block font-medium text-gray-700 mb-1">Nomor Rekening</label><input id="setBankNumber" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 text-sm" placeholder="7788 9900 12"></div>
+                                <div><label class="block font-medium text-gray-700 mb-1">Atas Nama</label><input id="setBankHolder" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 text-sm" placeholder="Yayasan Sedekah Berkah"></div>
+                                <button id="btnSimpanBank" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 rounded-lg text-sm"><i class="fa-solid fa-floppy-disk mr-1"></i>Simpan Pengaturan</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     </main>
 
+    <!-- ================= MODAL: FORM PROGRAM ================= -->
     <div id="modalForm" class="fixed inset-0 bg-gray-900/60 hidden items-center justify-center z-50 backdrop-blur-sm transition-opacity opacity-0">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-transform duration-300" id="modalContent">
-            
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto" id="modalContent">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 sticky top-0">
                 <h3 class="font-bold text-lg text-gray-800" id="modalTitle">Tambah Program Baru</h3>
-                <button id="btnCloseModal" class="text-gray-400 hover:text-red-500 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-white">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
+                <button id="btnCloseModal" class="text-gray-400 hover:text-red-500 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            
             <div class="p-6">
                 <form id="programForm" class="space-y-4">
                     <input type="hidden" id="programId">
-                    
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Program <span class="text-red-500">*</span></label>
                         <input type="text" id="namaProgram" required placeholder="Contoh: Beasiswa Tahfidz" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
                     </div>
-                    
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Kategori <span class="text-red-500">*</span></label>
@@ -148,6 +288,9 @@
                                 <option value="Pendidikan">Pendidikan</option>
                                 <option value="Kemanusiaan">Kemanusiaan</option>
                                 <option value="Infrastruktur">Infrastruktur</option>
+                                <option value="Kesehatan">Kesehatan</option>
+                                <option value="Dakwah">Dakwah</option>
+                                <option value="Wakaf">Wakaf</option>
                             </select>
                         </div>
                         <div>
@@ -155,12 +298,18 @@
                             <input type="number" id="targetDonasi" required placeholder="10000000" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
                         </div>
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi Singkat</label>
-                        <textarea id="deskripsi" rows="3" placeholder="Tulis deskripsi singkat program..." class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm resize-none"></textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Deadline Program</label>
+                        <input type="date" id="deadlineProgram" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
                     </div>
-                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">URL Gambar Sampul</label>
+                        <input type="url" id="gambarProgram" placeholder="https://... (kosongkan untuk gambar default)" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi Lengkap <span class="text-gray-400 font-normal">(boleh HTML sederhana: &lt;p&gt;, &lt;h3&gt;, &lt;ul&gt;, &lt;blockquote&gt;)</span></label>
+                        <textarea id="deskripsi" rows="6" placeholder="Ceritakan program ini selengkap mungkin agar donatur percaya..." class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm resize-y font-mono text-xs"></textarea>
+                    </div>
                     <div class="pt-2">
                         <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 rounded-lg transition-colors shadow-sm flex items-center justify-center">
                             <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Data Program
@@ -170,10 +319,68 @@
             </div>
         </div>
     </div>
-    
+
+    <!-- ================= MODAL: DETAIL TRANSAKSI ================= -->
+    <div id="modalDetail" class="fixed inset-0 bg-gray-900/60 hidden items-center justify-center z-50 backdrop-blur-sm transition-opacity opacity-0">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-transform duration-300" id="modalDetailContent">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-lg text-gray-800">Detail Transaksi</h3>
+                <button id="btnCloseDetail" class="text-gray-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div id="detailBody" class="p-6 space-y-3 text-sm max-h-[60vh] overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: FORM PENYALURAN ================= -->
+    <div id="modalPenyaluran" class="fixed inset-0 bg-gray-900/60 hidden items-center justify-center z-50 backdrop-blur-sm transition-opacity opacity-0">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto" id="modalPenyaluranContent">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-lg text-gray-800" id="penyaluranModalTitle">Tambah Update Penyaluran</h3>
+                <button id="btnClosePenyaluran" class="text-gray-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6">
+                <form id="penyaluranForm" class="space-y-4">
+                    <input type="hidden" id="penyaluranId">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Program <span class="text-red-500">*</span></label>
+                        <select id="penyaluranProgram" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 text-sm bg-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Judul Update <span class="text-red-500">*</span></label>
+                        <input type="text" id="penyaluranJudul" required placeholder="Contoh: Penyaluran 200 Paket Sembako di Bekasi" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Tanggal</label>
+                            <input type="date" id="penyaluranTanggal" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Jumlah Disalurkan (Rp)</label>
+                            <input type="number" id="penyaluranJumlah" placeholder="5000000" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Lokasi</label>
+                        <input type="text" id="penyaluranLokasi" placeholder="Kampung Harapan, Bekasi" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">URL Dokumentasi (opsional)</label>
+                        <input type="url" id="penyaluranGambar" placeholder="https://..." class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Cerita / Keterangan</label>
+                        <textarea id="penyaluranCerita" rows="3" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 text-sm resize-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 rounded-lg transition-colors"><i class="fa-solid fa-floppy-disk mr-2"></i>Simpan Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="app.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

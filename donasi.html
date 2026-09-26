@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Donasi | SedekahBerkah</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            fontFamily: { poppins: ['Poppins','sans-serif'] },
+            colors: { emerald: {50:'#ecfdf5',100:'#d1fae5',500:'#10b981',600:'#059669',700:'#047857'}, gold:'#F59E0B' }
+        }}};
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="font-poppins text-gray-800 antialiased bg-slate-50">
+
+    <!-- NAVBAR -->
+    <nav class="bg-white fixed w-full z-50 top-0 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="index.html" class="flex items-center gap-2">
+                    <i class="fa-solid fa-hand-holding-heart text-3xl text-emerald-500"></i>
+                    <span class="font-bold text-2xl text-gray-800">Sedekah<span class="text-emerald-500">Berkah</span></span>
+                </a>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="index.html" class="text-gray-600 hover:text-emerald-500 font-medium"><i class="fa-solid fa-arrow-left mr-1"></i>Kembali ke Beranda</a>
+                    <a href="cek-donasi.html" class="text-gray-600 hover:text-emerald-500 font-medium">Cek Donasi</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-28 pb-20">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Lengkapi Donasi Anda</h1>
+                <p class="text-gray-500">Setiap rupiah yang Anda titipkan amanah dan tersalurkan tepat sasaran.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8 items-start">
+                <!-- ================= FORM ================= -->
+                <form id="donasiForm" class="lg:col-span-2 space-y-6">
+
+                    <!-- STEP 1: Program -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <h2 class="font-bold text-lg mb-4 flex items-center gap-2"><span class="w-7 h-7 rounded-full bg-emerald-500 text-white text-sm flex items-center justify-center font-bold">1</span>Pilih Program</h2>
+                        <select id="pilihProgram" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white text-sm">
+                            <option value="">Memuat program donasi...</option>
+                        </select>
+                        <div id="ringkasanProgram" class="hidden mt-4 flex gap-4 items-center bg-emerald-50/60 border border-emerald-100 rounded-xl p-3">
+                            <img id="rpGambar" src="" class="w-16 h-16 rounded-lg object-cover bg-gray-200" alt="">
+                            <div class="min-w-0">
+                                <p id="rpNama" class="font-semibold text-gray-800 text-sm truncate"></p>
+                                <p class="text-xs text-gray-500 mt-0.5">Terkumpul <b id="rpTerkumpul" class="text-emerald-600"></b> dari <span id="rpTarget"></span></p>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1.5 max-w-[220px]"><div id="rpBar" class="bg-emerald-500 h-1.5 rounded-full" style="width:0%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Nominal -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <h2 class="font-bold text-lg mb-4 flex items-center gap-2"><span class="w-7 h-7 rounded-full bg-emerald-500 text-white text-sm flex items-center justify-center font-bold">2</span>Nominal Donasi</h2>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" id="chipNominal">
+                            <button type="button" data-nominal="25000"  class="nominal-chip border border-gray-200 rounded-xl py-3 font-semibold text-gray-700 hover:border-emerald-400 transition text-sm">Rp 25.000</button>
+                            <button type="button" data-nominal="50000"  class="nominal-chip border border-gray-200 rounded-xl py-3 font-semibold text-gray-700 hover:border-emerald-400 transition text-sm">Rp 50.000</button>
+                            <button type="button" data-nominal="100000" class="nominal-chip border border-gray-200 rounded-xl py-3 font-semibold text-gray-700 hover:border-emerald-400 transition text-sm selected">Rp 100.000</button>
+                            <button type="button" data-nominal="250000" class="nominal-chip border border-gray-200 rounded-xl py-3 font-semibold text-gray-700 hover:border-emerald-400 transition text-sm">Rp 250.000</button>
+                            <button type="button" data-nominal="500000" class="nominal-chip border border-gray-200 rounded-xl py-3 font-semibold text-gray-700 hover:border-emerald-400 transition text-sm">Rp 500.000</button>
+                            <button type="button" data-nominal="1000000" class="nominal-chip border border-gray-200 rounded-xl py-3 font-semibold text-gray-700 hover:border-emerald-400 transition text-sm">Rp 1.000.000</button>
+                            <button type="button" data-nominal="2000000" class="nominal-chip border border-gray-200 rounded-xl py-3 font-semibold text-gray-700 hover:border-emerald-400 transition text-sm">Rp 2.000.000</button>
+                            <button type="button" data-nominal="5000000" class="nominal-chip border border-gray-200 rounded-xl py-3 font-semibold text-gray-700 hover:border-emerald-400 transition text-sm">Rp 5.000.000</button>
+                        </div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Atau isi nominal sendiri</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">Rp</span>
+                            <input type="text" inputmode="numeric" id="nominalInput" placeholder="100.000" value="100.000" required
+                                   class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-semibold">
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Data diri -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <h2 class="font-bold text-lg mb-4 flex items-center gap-2"><span class="w-7 h-7 rounded-full bg-emerald-500 text-white text-sm flex items-center justify-center font-bold">3</span>Data Donatur</h2>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
+                                <input type="text" id="namaDonatur" required placeholder="Contoh: Ahmad Fauzi" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Email <span class="text-red-500">*</span></label>
+                                <input type="email" id="emailDonatur" required placeholder="email@contoh.com" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">No. WhatsApp</label>
+                                <input type="tel" id="hpDonatur" placeholder="08xxxxxxxxxx" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm">
+                            </div>
+                            <div class="flex items-end pb-1">
+                                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                                    <input type="checkbox" id="anonim" class="w-4 h-4 accent-emerald-500 rounded">
+                                    <span class="text-sm text-gray-600">Sembunyikan nama saya (Anonim)</span>
+                                </label>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Pesan / Doa <span class="text-gray-400 font-normal">(opsional)</span></label>
+                                <textarea id="pesanDonatur" rows="2" maxlength="200" placeholder="Tuliskan pesan atau doa kebaikan..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm resize-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: Pembayaran -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <h2 class="font-bold text-lg mb-4 flex items-center gap-2"><span class="w-7 h-7 rounded-full bg-emerald-500 text-white text-sm flex items-center justify-center font-bold">4</span>Metode Pembayaran</h2>
+                        <p class="text-xs uppercase tracking-wider font-semibold text-gray-400 mb-3">QR Code</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5 pay-option">
+                            <input type="radio" name="metode" id="pm-qris" value="qris" class="peer hidden" checked>
+                            <label for="pm-qris" class="cursor-pointer border border-gray-200 rounded-xl p-3 flex items-center gap-3 transition hover:border-emerald-400 peer-checked:!border-emerald-500 peer-checked:!bg-emerald-50 peer-checked:ring-2 peer-checked:ring-emerald-500/30">
+                                <i class="fa-solid fa-qrcode text-xl text-emerald-600"></i><span class="text-sm font-semibold">QRIS</span>
+                            </label>
+                        </div>
+                        <p class="text-xs uppercase tracking-wider font-semibold text-gray-400 mb-3">Virtual Account</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5 pay-option">
+                            <input type="radio" name="metode" id="pm-bca" value="bca" class="peer hidden">
+                            <label for="pm-bca" class="cursor-pointer border border-gray-200 rounded-xl p-3 flex items-center gap-3 transition hover:border-emerald-400 peer-checked:!border-emerald-500 peer-checked:!bg-emerald-50 peer-checked:ring-2 peer-checked:ring-emerald-500/30">
+                                <span class="w-8 h-8 rounded bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">BCA</span><span class="text-sm font-semibold">BCA</span>
+                            </label>
+                            <input type="radio" name="metode" id="pm-mandiri" value="mandiri" class="peer hidden">
+                            <label for="pm-mandiri" class="cursor-pointer border border-gray-200 rounded-xl p-3 flex items-center gap-3 transition hover:border-emerald-400 peer-checked:!border-emerald-500 peer-checked:!bg-emerald-50 peer-checked:ring-2 peer-checked:ring-emerald-500/30">
+                                <span class="w-8 h-8 rounded bg-yellow-500 text-gray-900 text-[10px] font-bold flex items-center justify-center">MDR</span><span class="text-sm font-semibold">Mandiri</span>
+                            </label>
+                            <input type="radio" name="metode" id="pm-bri" value="bri" class="peer hidden">
+                            <label for="pm-bri" class="cursor-pointer border border-gray-200 rounded-xl p-3 flex items-center gap-3 transition hover:border-emerald-400 peer-checked:!border-emerald-500 peer-checked:!bg-emerald-50 peer-checked:ring-2 peer-checked:ring-emerald-500/30">
+                                <span class="w-8 h-8 rounded bg-blue-800 text-white text-[10px] font-bold flex items-center justify-center">BRI</span><span class="text-sm font-semibold">BRI</span>
+                            </label>
+                            <input type="radio" name="metode" id="pm-bsi" value="bsi" class="peer hidden">
+                            <label for="pm-bsi" class="cursor-pointer border border-gray-200 rounded-xl p-3 flex items-center gap-3 transition hover:border-emerald-400 peer-checked:!border-emerald-500 peer-checked:!bg-emerald-50 peer-checked:ring-2 peer-checked:ring-emerald-500/30">
+                                <span class="w-8 h-8 rounded bg-teal-600 text-white text-[10px] font-bold flex items-center justify-center">BSI</span><span class="text-sm font-semibold">BSI</span>
+                            </label>
+                        </div>
+                        <p class="text-xs uppercase tracking-wider font-semibold text-gray-400 mb-3">E-Wallet</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pay-option">
+                            <input type="radio" name="metode" id="pm-gopay" value="gopay" class="peer hidden">
+                            <label for="pm-gopay" class="cursor-pointer border border-gray-200 rounded-xl p-3 flex items-center gap-3 transition hover:border-emerald-400 peer-checked:!border-emerald-500 peer-checked:!bg-emerald-50 peer-checked:ring-2 peer-checked:ring-emerald-500/30">
+                                <span class="w-8 h-8 rounded bg-green-600 text-white text-[10px] font-bold flex items-center justify-center">GO</span><span class="text-sm font-semibold">GoPay</span>
+                            </label>
+                            <input type="radio" name="metode" id="pm-ovo" value="ovo" class="peer hidden">
+                            <label for="pm-ovo" class="cursor-pointer border border-gray-200 rounded-xl p-3 flex items-center gap-3 transition hover:border-emerald-400 peer-checked:!border-emerald-500 peer-checked:!bg-emerald-50 peer-checked:ring-2 peer-checked:ring-emerald-500/30">
+                                <span class="w-8 h-8 rounded bg-purple-700 text-white text-[10px] font-bold flex items-center justify-center">OVO</span><span class="text-sm font-semibold">OVO</span>
+                            </label>
+                            <input type="radio" name="metode" id="pm-dana" value="dana" class="peer hidden">
+                            <label for="pm-dana" class="cursor-pointer border border-gray-200 rounded-xl p-3 flex items-center gap-3 transition hover:border-emerald-400 peer-checked:!border-emerald-500 peer-checked:!bg-emerald-50 peer-checked:ring-2 peer-checked:ring-emerald-500/30">
+                                <span class="w-8 h-8 rounded bg-sky-600 text-white text-[10px] font-bold flex items-center justify-center">DNA</span><span class="text-sm font-semibold">DANA</span>
+                            </label>
+                            <input type="radio" name="metode" id="pm-shopeepay" value="shopeepay" class="peer hidden">
+                            <label for="pm-shopeepay" class="cursor-pointer border border-gray-200 rounded-xl p-3 flex items-center gap-3 transition hover:border-emerald-400 peer-checked:!border-emerald-500 peer-checked:!bg-emerald-50 peer-checked:ring-2 peer-checked:ring-emerald-500/30">
+                                <span class="w-8 h-8 rounded bg-orange-600 text-white text-[10px] font-bold flex items-center justify-center">SPay</span><span class="text-sm font-semibold">ShopeePay</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnLanjut" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-500/30 transition-all text-lg">
+                        Lanjutkan Pembayaran <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                    <p class="text-center text-xs text-gray-400"><i class="fa-solid fa-shield-halved mr-1"></i>Dengan melanjutkan, Anda menyetujui Syarat &amp; Ketentuan platform SedekahBerkah.</p>
+                </form>
+
+                <!-- ================= RINGKASAN ================= -->
+                <aside class="lg:col-span-1 sticky top-28 bg-white rounded-2xl shadow-lg border border-gray-100 p-6 space-y-4">
+                    <h3 class="font-bold text-gray-900">Ringkasan Donasi</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between gap-3"><span class="text-gray-500 shrink-0">Program</span><span id="sumProgram" class="font-semibold text-gray-800 text-right">Belum dipilih</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Nominal</span><span id="sumNominal" class="font-semibold text-gray-800">Rp 100.000</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Biaya admin</span><span class="font-semibold text-emerald-600">Gratis</span></div>
+                        <hr class="border-gray-100">
+                        <div class="flex justify-between text-base"><span class="font-bold text-gray-800">Total Transfer</span><span id="sumTotal" class="font-bold text-emerald-600">Rp 100.000</span></div>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-xs text-emerald-800 leading-relaxed">
+                        <i class="fa-solid fa-circle-info mr-1"></i>Transaksi dibuat berstatus <b>Menunggu Pembayaran</b>. Setelah dibayar, dana diverifikasi admin lalu otomatis menambah progres program.
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-gray-400 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm">&copy; 2026 Yayasan Sedekah Berkah. All rights reserved.</div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="app.js"></script>
+    <script src="donasi.js"></script>
+</body>
+</html>

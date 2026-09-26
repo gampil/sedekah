@@ -53,9 +53,11 @@
                     <a href="#program" class="text-gray-600 hover:text-emerald-500 font-medium transition">Program</a>
                     <a href="#transparansi" class="text-gray-600 hover:text-emerald-500 font-medium transition">Transparansi</a>
                     <a href="#dokumentasi" class="text-gray-600 hover:text-emerald-500 font-medium transition">Dokumentasi</a>
-                    <button class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full font-medium shadow-lg shadow-emerald-500/30 transition-all hover:-translate-y-0.5">
+                    <a href="cek-donasi.html" class="text-gray-600 hover:text-emerald-500 font-medium transition">Cek Donasi</a>
+                    <a href="admin.html" class="text-gray-400 hover:text-emerald-500 text-sm font-medium transition" title="Dashboard Admin"><i class="fa-solid fa-lock"></i></a>
+                    <a href="donasi.html" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full font-medium shadow-lg shadow-emerald-500/30 transition-all hover:-translate-y-0.5 inline-block text-center">
                         Sedekah Sekarang
-                    </button>
+                    </a>
                 </div>
 
                 <div class="md:hidden flex items-center">
@@ -69,8 +71,7 @@
             <div class="px-4 pt-2 pb-6 space-y-2 text-center">
                 <a href="#beranda" class="block px-3 py-2 text-gray-600 font-medium">Beranda</a>
                 <a href="#program" class="block px-3 py-2 text-gray-600 font-medium">Program</a>
-                <a href="#transparansi" class="block px-3 py-2 text-gray-600 font-medium">Transparansi</a>
-                <button class="w-full mt-4 bg-emerald-500 text-white px-6 py-3 rounded-full font-medium shadow-lg">Sedekah Sekarang</button>
+                <a href="#transparansi" class="block px-3 py-2 text-gray-600 font-medium">Transparansi</a> class="block w-full mt-4 bg-emerald-500 text-white px-6 py-3 rounded-full font-medium shadow-lg">Sedekah Sekarang</a>
             </div>
         </div>
     </nav>
@@ -88,9 +89,9 @@
                         Setiap rupiah yang Anda sedekahkan membawa harapan baru bagi mereka yang membutuhkan. Mari bersama membangun jembatan kebaikan.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <button class="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-xl shadow-emerald-500/30 transition-all hover:-translate-y-1 text-center">
+                        <a href="donasi.html" class="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-xl shadow-emerald-500/30 transition-all hover:-translate-y-1 text-center">
                             Sedekah Sekarang <i class="fa-solid fa-arrow-right ml-2"></i>
-                        </button>
+                        </a>
                         <button class="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 px-8 py-4 rounded-full font-semibold text-lg shadow-sm transition-all text-center">
                             Lihat Program
                         </button>
@@ -109,7 +110,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-500 font-medium">Total Donatur</p>
-                            <p class="font-bold text-xl text-gray-800">12,500+</p>
+                            <p class="font-bold text-xl text-gray-800"><span id="statDonatur">0</span></p>
                         </div>
                     </div>
 
@@ -119,7 +120,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-500 font-medium">Program Aktif</p>
-                            <p class="font-bold text-xl text-gray-800">45+</p>
+                            <p class="font-bold text-xl text-gray-800"><span id="statProgram">0</span></p>
                         </div>
                     </div>
                 </div>
@@ -133,15 +134,15 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                 <div class="bg-emerald-700/80 p-6 rounded-2xl border border-emerald-500 shadow-inner" data-aos="zoom-in" data-aos-delay="0">
                     <p class="text-emerald-100 mb-2">Dana Terkumpul</p>
-                    <h3 class="text-3xl font-bold text-white mb-1">Rp <span id="stat-dana" class="counter" data-target="0">0</span>Jt+</h3>
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-1 break-all">Rp&nbsp;<span id="statTerkumpul">0</span></h3>
                 </div>
                 <div class="bg-emerald-700/80 p-6 rounded-2xl border border-emerald-500 shadow-inner" data-aos="zoom-in" data-aos-delay="100">
                     <p class="text-emerald-100 mb-2">Donatur Baik</p>
-                    <h3 class="text-3xl font-bold text-white mb-1"><span class="counter" data-target="15000">0</span>+</h3>
+                    <h3 class="text-3xl font-bold text-white mb-1"><span id="statDonaturStrip">0</span>+</h3>
                 </div>
                 <div class="bg-emerald-700/80 p-6 rounded-2xl border border-emerald-500 shadow-inner" data-aos="zoom-in" data-aos-delay="200">
                     <p class="text-emerald-100 mb-2">Program Aktif</p>
-                    <h3 class="text-3xl font-bold text-white mb-1"><span id="stat-program" class="counter" data-target="0">0</span></h3>
+                    <h3 class="text-3xl font-bold text-white mb-1"><span id="statProgramStrip">0</span></h3>
                 </div>
                 <div class="bg-emerald-700/80 p-6 rounded-2xl border border-emerald-500 shadow-inner" data-aos="zoom-in" data-aos-delay="300">
                     <p class="text-emerald-100 mb-2">Penerima Manfaat</p>
@@ -202,15 +203,15 @@
                 <div class="grid md:grid-cols-3 gap-6 mb-10">
                     <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
                         <div class="text-emerald-600 text-sm font-semibold mb-1">Total Pemasukan</div>
-                        <div class="text-2xl font-bold text-gray-900">Rp 12.500.000.000</div>
+                        <div class="text-xl md:text-2xl font-bold text-gray-900 break-all" id="finPemasukan">Rp 0</div>
                     </div>
                     <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
                         <div class="text-blue-600 text-sm font-semibold mb-1">Total Penyaluran</div>
-                        <div class="text-2xl font-bold text-gray-900">Rp 10.200.000.000</div>
+                        <div class="text-xl md:text-2xl font-bold text-gray-900 break-all" id="finPenyaluran">Rp 0</div>
                     </div>
                     <div class="bg-amber-50 p-6 rounded-2xl border border-amber-100">
                         <div class="text-amber-700 text-sm font-semibold mb-1">Saldo Tersedia</div>
-                        <div class="text-2xl font-bold text-gray-900">Rp 2.300.000.000</div>
+                        <div class="text-xl md:text-2xl font-bold text-gray-900 break-all" id="finSaldo">Rp 0</div>
                     </div>
                 </div>
 
@@ -227,6 +228,21 @@
                             <canvas id="barChart"></canvas>
                         </div>
                     </div>
+                </div>
+
+                <div class="mt-10">
+                    <h4 class="font-bold text-gray-800 mb-4 text-lg"><i class="fa-solid fa-box-open text-emerald-500 mr-2"></i>Update &amp; Penyaluran Terbaru</h4>
+                    <div id="timelinePenyaluran" class="grid md:grid-cols-3 gap-6"></div>
+                </div>
+
+                <div class="mt-10 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h4 class="font-bold text-gray-800"><i class="fa-solid fa-bell text-emerald-500 mr-2"></i>Aktivitas Donasi Terbaru</h4>
+                        <span class="text-xs text-emerald-600 font-semibold animate-pulse"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Live</span>
+                    </div>
+                    <ul id="listDonasiTerbaru" class="divide-y divide-gray-100 max-h-[420px] overflow-y-auto">
+                        <li class="px-6 py-4 text-sm text-gray-400 italic">Memuat aktivitas donasi...</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -302,7 +318,7 @@
             <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Ayo Berbagi Kebaikan Hari Ini</h2>
             <p class="text-emerald-100 text-lg mb-10">Pahala mengalir abadi dari setiap senyum yang Anda ciptakan.</p>
             <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <button class="bg-white text-emerald-600 px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-gray-50 transition-all hover:scale-105">Sedekah Sekarang</button>
+                <a href="donasi.html" class="bg-white text-emerald-600 px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-gray-50 transition-all hover:scale-105 inline-block">Sedekah Sekarang</a>
                 <button class="bg-emerald-700/50 backdrop-blur-sm border border-emerald-400 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-emerald-700 transition-all">Hubungi Admin</button>
             </div>
         </div>
@@ -380,6 +396,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <script src="app.js"></script>
     <script src="main.js"></script>
 </body>
 </html>
