@@ -441,10 +441,25 @@
         const rows = filteredTransaksi();
         if (!rows.length) { showToast('Tidak ada data untuk diekspor.', 'warn'); return; }
         const head = ['Invoice', 'Tanggal', 'Donatur', 'Email', 'Telepon', 'Program', 'Nominal', 'Metode', 'Status'];
-        const csv = [head.join(';')].concat(rows.map(t => [
-            t.invoice || t.key, new Date(t.timestamp).toLocaleDateString('id-ID'), t.donatur, t.email, t.telepon || '',
-            t.programNama, t.nominal, (PAY_METHODS[t.metode] || {}).nama || t.metode, t.status
-        ].map(v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`).join(';')))).join('\n');
+        // helper: bersihkan nilai -> string CSV aman (tanpa template literal / regex agar kompatibel semua browser)
+        function csvCell(v) {
+            var s = (v === null || v === undefined) ? '' : String(v);
+            s = s.split('"').join('""');
+            return '"' + s + '"';
+        }
+        var csvLines = [head.map(csvCell).join(';')];
+        rows.forEach(function (t) {
+            var cells = [
+                t.invoice || t.key,
+                new Date(t.timestamp).toLocaleDateString('id-ID'),
+                t.donatur, t.email, t.telepon || '',
+                t.programNama, t.nominal,
+                (PAY_METHODS[t.metode] || {}).nama || t.metode,
+                t.status
+            ];
+            csvLines.push(cells.map(csvCell).join(';'));
+        });
+        const csv = csvLines.join('\n');
         const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);

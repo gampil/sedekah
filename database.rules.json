@@ -1,22 +1,42 @@
 {
   "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
+
     "program": {
       ".read": true,
-      ".write": false
+      ".write": "auth != null"
     },
-    "donasi": {
-      ".read": false,
-      "$id": {
-        ".write": true,
-        ".read": "auth != null || newData !== null",
-        "status": { ".validate": "newData.isString()" }
-      }
-    },
+
     "penyaluran": {
       ".read": true,
-      ".write": false
+      ".write": "auth != null"
     },
-    ".read": "auth != null",
-    ".write": "auth != null"
+
+    "pengaturan": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+
+    "statistik": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+
+    "donasi": {
+      "$id": {
+        ".read": true,
+        ".write": true,
+        "nominal": {
+          ".validate": "newData.isNumber() && newData.val() > 0"
+        },
+        "status": {
+          ".validate": "newData.isString() && (newData.val() == 'menunggu' ? true : newData.val() == 'verifikasi' ? true : newData.val() == 'success' ? true : newData.val() == 'gagal' ? true : newData.val() == 'ditolak')"
+        },
+        "invoice": {
+          ".validate": "newData.isString() && newData.val().length >= 6"
+        }
+      }
+    }
   }
 }
