@@ -444,7 +444,7 @@
         const csv = [head.join(';')].concat(rows.map(t => [
             t.invoice || t.key, new Date(t.timestamp).toLocaleDateString('id-ID'), t.donatur, t.email, t.telepon || '',
             t.programNama, t.nominal, (PAY_METHODS[t.metode] || {}).nama || t.metode, t.status
-        ].map(v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`).join(';')))).join('\n');
+        ].map(v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`).join(';'))).join('\n');
         const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
