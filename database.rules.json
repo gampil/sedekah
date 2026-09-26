@@ -1,0 +1,22 @@
+{
+  "rules": {
+    "program": {
+      ".read": true,
+      ".write": false
+    },
+    "donasi": {
+      ".read": false,
+      "$id": {
+        ".write": true,
+        ".read": "auth != null || newData !== null",
+        "status": { ".validate": "newData.isString()" }
+      }
+    },
+    "penyaluran": {
+      ".read": true,
+      ".write": false
+    },
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
