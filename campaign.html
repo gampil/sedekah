@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Program Donasi | SedekahBerkah</title>
+    <meta name="description" content="Detail program donasi: target, terkumpul, donor, update penyaluran, dan cara berdonasi.">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+                colors: { emerald: { 50:'#ecfdf5',100:'#d1fae5',500:'#10b981',600:'#059669',700:'#047857' }, gold: '#F59E0B' }
+            }}
+        };
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="font-poppins text-gray-800 antialiased bg-slate-50">
+
+    <!-- NAVBAR -->
+    <nav class="bg-white fixed w-full z-50 top-0 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="index.html" class="flex items-center gap-2">
+                    <i class="fa-solid fa-hand-holding-heart text-3xl text-emerald-500"></i>
+                    <span class="font-bold text-2xl text-gray-800 tracking-tight">Sedekah<span class="text-emerald-500">Berkah</span></span>
+                </a>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="index.html" class="text-gray-600 hover:text-emerald-500 font-medium transition">Beranda</a>
+                    <a href="index.html#program" class="text-gray-600 hover:text-emerald-500 font-medium transition">Program</a>
+                    <a href="index.html#transparansi" class="text-gray-600 hover:text-emerald-500 font-medium transition">Transparansi</a>
+                    <a href="cek-donasi.html" class="text-gray-600 hover:text-emerald-500 font-medium transition">Cek Donasi</a>
+                    <a id="navDonasiBtn" href="#donasi" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full font-medium shadow-lg shadow-emerald-500/30 transition-all">Donasi Sekarang</a>
+                </div>
+                <a href="index.html#program" class="md:hidden text-emerald-600 font-semibold"><i class="fa-solid fa-arrow-left mr-1"></i>Kembali</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-20 pb-24 lg:pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+
+            <!-- Breadcrumb -->
+            <p class="text-sm text-gray-500 mb-6">
+                <a href="index.html" class="hover:text-emerald-600">Beranda</a> <i class="fa-solid fa-angle-right mx-1 text-xs"></i>
+                <a href="index.html#program" class="hover:text-emerald-600">Program</a> <i class="fa-solid fa-angle-right mx-1 text-xs"></i>
+                <span id="crumbNama" class="text-gray-700 font-medium">Detail Program</span>
+            </p>
+
+            <!-- Loading state -->
+            <div id="pageLoading" class="py-24 text-center">
+                <i class="fa-solid fa-circle-notch fa-spin text-4xl text-emerald-500 mb-4"></i>
+                <p class="text-gray-500">Memuat detail program...</p>
+            </div>
+
+            <!-- Not found state -->
+            <div id="pageNotFound" class="hidden py-24 text-center">
+                <i class="fa-solid fa-folder-open text-5xl text-gray-300 mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Program tidak ditemukan</h2>
+                <p class="text-gray-500 mb-6">Program yang Anda cari mungkin sudah dihapus atau tautan salah.</p>
+                <a href="index.html#program" class="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-full font-semibold transition">Lihat Program Lain</a>
+            </div>
+
+            <!-- Content -->
+            <div id="pageContent" class="hidden grid lg:grid-cols-3 gap-10">
+                <!-- LEFT: detail -->
+                <div class="lg:col-span-2 space-y-8">
+                    <div>
+                        <span id="detailKategori" class="inline-block bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full mb-3">Kategori</span>
+                        <h1 id="detailJudul" class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Judul Program</h1>
+                        <div class="flex flex-wrap gap-4 text-sm text-gray-500">
+                            <span><i class="fa-solid fa-users mr-1 text-emerald-500"></i><b id="detailDonaturCount">0</b> Donatur</span>
+                            <span><i class="fa-regular fa-calendar mr-1 text-emerald-500"></i>Berakhir <b id="detailDeadline">-</b></span>
+                            <span><i class="fa-solid fa-location-dot mr-1 text-emerald-500"></i>Salurkan oleh Yayasan SedekahBerkah</span>
+                        </div>
+                    </div>
+
+                    <div class="relative rounded-3xl overflow-hidden shadow-lg bg-gray-200 h-[300px] md:h-[420px]" id="heroImageWrap">
+                        <img id="detailGambar" src="" alt="Gambar Program" class="w-full h-full object-cover">
+                    </div>
+
+                    <!-- Deskripsi -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">Tentang Program Ini</h2>
+                        <div id="detailDeskripsi" class="rich-text text-gray-600 leading-relaxed"></div>
+                    </div>
+
+                    <!-- Update Penyaluran -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                        <h2 class="text-xl font-bold text-gray-900 mb-1">Update &amp; Penyaluran</h2>
+                        <p class="text-sm text-gray-500 mb-6">Bukti transparan penyaluran dana program ini langsung dari lapangan.</p>
+                        <div id="penyaluranList" class="space-y-6"></div>
+                    </div>
+
+                    <!-- Donatur Terbaru -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold text-gray-900">Donatur Terbaru</h2>
+                            <span class="text-sm text-gray-500"><b id="donaturTotal" class="text-emerald-600">0</b> orang</span>
+                        </div>
+                        <div id="donaturList" class="space-y-4"></div>
+                        <button id="btnMoreDonatur" class="hidden mt-6 w-full border border-emerald-200 text-emerald-600 hover:bg-emerald-50 font-semibold py-3 rounded-xl transition text-sm">
+                            Lihat Donatur Lainnya <i class="fa-solid fa-chevron-down ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RIGHT: sticky donation box -->
+                <div class="lg:col-span-1">
+                    <div class="sticky top-28 bg-white rounded-2xl shadow-lg border border-gray-100 p-6 space-y-5">
+                        <div>
+                            <p class="text-emerald-600 text-3xl font-bold" id="boxTerkumpul">Rp 0</p>
+                            <p class="text-sm text-gray-500 mt-1">Terkumpul dari target <span id="boxTarget" class="font-semibold text-gray-700">Rp 0</span></p>
+                        </div>
+                        <div>
+                            <div class="w-full bg-gray-100 rounded-full h-2.5">
+                                <div id="boxProgress" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-700" style="width:0%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs font-semibold mt-2">
+                                <span class="text-emerald-600"><span id="boxPersen">0</span>% tercapai</span>
+                                <span class="text-gray-500"><span id="boxHari">-</span> hari lagi</span>
+                            </div>
+                        </div>
+                        <hr class="border-gray-100">
+                        <div class="grid grid-cols-2 gap-3 text-center text-sm">
+                            <div class="bg-gray-50 rounded-xl p-3">
+                                <p class="font-bold text-gray-800" id="boxDonatur">0</p>
+                                <p class="text-gray-500 text-xs">Donatur</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-3">
+                                <p class="font-bold text-gray-800" id="boxPenyaluran">0</p>
+                                <p class="text-gray-500 text-xs">Update Penyaluran</p>
+                            </div>
+                        </div>
+                        <a href="donasi.html" id="boxDonasiBtn" class="block w-full bg-emerald-500 hover:bg-emerald-600 text-white text-center font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/30 transition-all hover:-translate-y-0.5">
+                            <i class="fa-solid fa-hand-holding-heart mr-2"></i>Donasi Sekarang
+                        </a>
+                        <p class="text-[11px] text-center text-gray-400"><i class="fa-solid fa-lock mr-1"></i>Transaksi aman &amp; dana disalurkan tepat sasaran</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER MINI -->
+    <footer class="bg-gray-900 text-gray-400 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm">
+            <p>&copy; 2026 Yayasan Sedekah Berkah. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="app.js"></script>
+    <script src="campaign.js"></script>
+</body>
+</html>
